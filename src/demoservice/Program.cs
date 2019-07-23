@@ -1,6 +1,8 @@
 ﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using Demoservice.Jobs;
 using Microsoft.Extensions.DependencyInjection;
+using Quartz.Spi;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
@@ -9,9 +11,9 @@ using Topshelf.Autofac;
 
 namespace Demoservice
 {
-    class Program
+    internal class Program
     {
-        static int Main()
+        private static int Main()
         {
             Log.Logger = new LoggerConfiguration()
                          .Enrich.FromLogContext()
@@ -49,6 +51,8 @@ namespace Demoservice
             builder.Populate(services);
             builder.RegisterType<MyServiceControl>();
             builder.RegisterType<MyService>();
+            builder.RegisterType<MyJobFactory>().As<IJobFactory>();
+            builder.RegisterType<HelloJob>().ExternallyOwned();
 
             var container = builder.Build();
 
